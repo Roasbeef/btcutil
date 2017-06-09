@@ -60,7 +60,7 @@ func BuildGCSFilter(P uint8, key [KeySize]byte, data [][]byte) (*Filter, error) 
 	if len(data) == 0 {
 		return nil, ErrNoData
 	}
-	if len(data) > ((1 << 32) - 1) {
+	if len(data) > int(^uint32(0)) {
 		return nil, ErrNTooBig
 	}
 	if P > 32 {
