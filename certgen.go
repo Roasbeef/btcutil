@@ -115,6 +115,8 @@ func NewTLSCertPair(organization string, validUntil time.Time, extraHosts []stri
 
 		DNSNames:    dnsNames,
 		IPAddresses: ipAddresses,
+
+		SignatureAlgorithm: x509.ECDSAWithSHA256,
 	}
 
 	derBytes, err := x509.CreateCertificate(rand.Reader, &template,
