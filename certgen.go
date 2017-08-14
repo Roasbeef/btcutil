@@ -31,7 +31,7 @@ func NewTLSCertPair(organization string, validUntil time.Time, extraHosts []stri
 		return nil, nil, errors.New("validUntil would create an already-expired certificate")
 	}
 
-	priv, err := ecdsa.GenerateKey(elliptic.P521(), rand.Reader)
+	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -115,6 +115,8 @@ func NewTLSCertPair(organization string, validUntil time.Time, extraHosts []stri
 
 		DNSNames:    dnsNames,
 		IPAddresses: ipAddresses,
+
+		SignatureAlgorithm: x509.ECDSAWithSHA256,
 	}
 
 	derBytes, err := x509.CreateCertificate(rand.Reader, &template,
