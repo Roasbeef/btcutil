@@ -6,9 +6,8 @@ package btcutil
 
 import (
 	"bytes"
-	"crypto/ecdsa"
-	"crypto/elliptic"
 	"crypto/rand"
+	"crypto/rsa"
 	_ "crypto/sha512" // Needed for RegisterHash in init
 	"crypto/x509"
 	"crypto/x509/pkix"
@@ -31,7 +30,7 @@ func NewTLSCertPair(organization string, validUntil time.Time, extraHosts []stri
 		return nil, nil, errors.New("validUntil would create an already-expired certificate")
 	}
 
-	priv, err := ecdsa.GenerateKey(elliptic.P521(), rand.Reader)
+	priv, err := rsa.GenerateKey(rand.Reader, 4096)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -115,6 +114,8 @@ func NewTLSCertPair(organization string, validUntil time.Time, extraHosts []stri
 
 		DNSNames:    dnsNames,
 		IPAddresses: ipAddresses,
+
+		SignatureAlgorithm: x509.SHA256WithRSA,
 	}
 
 	derBytes, err := x509.CreateCertificate(rand.Reader, &template,
@@ -129,13 +130,9 @@ func NewTLSCertPair(organization string, validUntil time.Time, extraHosts []stri
 		return nil, nil, fmt.Errorf("failed to encode certificate: %v", err)
 	}
 
-	keybytes, err := x509.MarshalECPrivateKey(priv)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to marshal private key: %v", err)
-	}
-
+	keybytes := x509.MarshalPKCS1PrivateKey(priv)
 	keyBuf := &bytes.Buffer{}
-	err = pem.Encode(keyBuf, &pem.Block{Type: "EC PRIVATE KEY", Bytes: keybytes})
+	err = pem.Encode(keyBuf, &pem.Block{Type: "RSA PRIVATE KEY", Bytes: keybytes})
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to encode private key: %v", err)
 	}
