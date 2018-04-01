@@ -52,7 +52,6 @@ const (
 // number to reduce, and our modulus N divided into its high 32-bits and lower
 // 32-bits.
 func fastReduction(v, nHi, nLo uint64) uint64 {
-
 	// First, we'll spit the item we need to reduce into its higher and
 	// lower bits.
 	vhi := v >> 32
