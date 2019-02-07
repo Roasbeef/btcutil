@@ -323,6 +323,12 @@ func BuildBasicFilter(block *wire.MsgBlock, prevOutScripts [][]byte) (*gcs.Filte
 				continue
 			}
 
+			// If the script is greater than the max script size,
+			// then we'll skip it since it's undependable anyway.
+			if len(txOut.PkScript) > txscript.MaxScriptSize {
+				continue
+			}
+
 			b.AddEntry(txOut.PkScript)
 		}
 	}
